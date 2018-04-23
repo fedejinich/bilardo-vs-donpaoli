@@ -3,13 +3,12 @@ import Text.Show.Functions
 type Nombre = String
 type Puntos = Int
 type Tactica = String
-type Titulo = (String, String)
 type Torneo = (String, String)
 type Accion = DT -> DT
 
-data DT = DT { nombre :: Nombre, puntos :: Puntos, tactica :: Tactica, titulos :: [Titulo], acciones :: [Accion] } deriving (Show) 
+data DT = DT { nombre :: Nombre, puntos :: Puntos, tactica :: Tactica, torneos :: [Torneo], acciones :: [Accion] } deriving (Show) 
 
-bilardo = DT { nombre = "Carlos Salvador Bilardo", puntos = 100, tactica = "4-4-2", titulos = [("Mundial 86","Internacional"), ("Metropolitano 82", "Nacional")], acciones = [tomarGatorade, rayoBidonizador, tomarGatorade, gritar, pincharConUnAlfiler] }
+bilardo = DT { nombre = "Carlos Salvador Bilardo", puntos = 100, tactica = "4-4-2", torneos = [("Mundial 86","Internacional"), ("Metropolitano 82", "Nacional")], acciones = [tomarGatorade, rayoBidonizador, tomarGatorade, gritar, pincharConUnAlfiler] }
 donPaoli = DT "Jorge Sampaoli" 100 "3-4-1-2" [("Torneo Chileno", "Nacional"), ("Torneo Chileno", "Nacional"), ("Torneo Chileno", "Nacional"),("Sudamericana","Internacional"),("Copa America", "Internacional")] [rayoSampaolizador, gritar, pincharConUnAlfiler]
 
 ------ACCIONES--------
@@ -56,14 +55,14 @@ sumarPuntosYAgregar :: Torneo -> Puntos -> DT -> DT
 sumarPuntosYAgregar torneo puntos = (agregarTorneo torneo).(modificarPuntos puntos)
 
 agregarTorneo :: Torneo -> DT -> DT
-agregarTorneo torneo dt = dt { titulos = torneo : titulos dt }
+agregarTorneo torneo dt = dt { torneos = torneo : torneos dt }
   
 -- rayoBidonizador: suma 10 puntos X cada título nacional + 20 X cada título internacional.
 rayoBidonizador :: DT -> DT
-rayoBidonizador dt = modificarPuntos (puntosDeTitulos dt) dt
+rayoBidonizador dt = modificarPuntos (puntosDeTorneos dt) dt
 
-puntosDeTitulos :: DT -> Puntos
-puntosDeTitulos dt = puntosNacionales dt + puntosInternacionales dt
+puntosDeTorneos :: DT -> Puntos
+puntosDeTorneos dt = puntosNacionales dt + puntosInternacionales dt
 
 puntosNacionales :: DT -> Puntos
 puntosNacionales = torneosPorPuntaje 10 "Nacional"
@@ -72,17 +71,17 @@ puntosInternacionales :: DT -> Puntos
 puntosInternacionales = torneosPorPuntaje 20 "Internacional"
 
 torneosPorPuntaje :: Int -> String -> DT -> Puntos
-torneosPorPuntaje puntaje tipoTorneo = (*puntaje).length.(titulosSegunTipo tipoTorneo)
+torneosPorPuntaje puntaje tipoTorneo = (*puntaje).length.(torneosSegunTipo tipoTorneo)
 
-titulosSegunTipo :: String -> DT -> [Titulo]
-titulosSegunTipo tipo = filter (esDeTipo tipo).titulos 
+torneosSegunTipo :: String -> DT -> [Torneo]
+torneosSegunTipo tipo = filter (esDeTipo tipo).torneos 
 
-esDeTipo :: String -> Titulo -> Bool
-esDeTipo tipo (_,tipoTitulo) = tipo == tipoTitulo
+esDeTipo :: String -> Torneo -> Bool
+esDeTipo tipo (_,tipoTorneo) = tipo == tipoTorneo
 
 -- rayoSampaolizador: resta 200 puntos salvo que su táctica sea “4-4-2”, en ese caso suma 200.
 rayoSampaolizador :: DT -> DT
-rayoSampaolizador (DT nombre puntos "4-4-2" titulos acciones) = (DT nombre (puntos + 200) "4-4-2" titulos acciones)
+rayoSampaolizador (DT nombre puntos "4-4-2" torneos acciones) = (DT nombre (puntos + 200) "4-4-2" torneos acciones)
 rayoSampaolizador dt = modificarPuntos (-200) dt
 
 --------------PELEA-------------------
