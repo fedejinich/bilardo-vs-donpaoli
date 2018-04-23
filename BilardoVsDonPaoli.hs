@@ -30,7 +30,7 @@ pincharConUnAlfiler :: Accion
 pincharConUnAlfiler = (agregarAccion gritar).(modificarPuntos 20)
 
 agregarAccion :: Accion -> DT -> DT
-agregarAccion accion dt = dt { acciones = accion : acciones dt } --ACA HAY REPETICION DE LOGICA PERO PAJA ARREGLARLO, PREFIERO DORMIR
+agregarAccion accion dt = dt { acciones = accion : acciones dt }
 
 -- gritar: agrega “AHHHH” al principio del nombre.
 gritar :: DT -> DT 
@@ -56,7 +56,7 @@ sumarPuntosYAgregar :: Torneo -> Puntos -> DT -> DT
 sumarPuntosYAgregar torneo puntos = (agregarTorneo torneo).(modificarPuntos puntos)
 
 agregarTorneo :: Torneo -> DT -> DT
-agregarTorneo torneo dt = dt { titulos = torneo : titulos dt } --ACA HAY REPETICION DE LOGICA PERO PAJA ARREGLARLO, PREFIERO DORMIR
+agregarTorneo torneo dt = dt { titulos = torneo : titulos dt }
   
 -- rayoBidonizador: suma 10 puntos X cada título nacional + 20 X cada título internacional.
 rayoBidonizador :: DT -> DT
@@ -66,10 +66,13 @@ puntosDeTitulos :: DT -> Puntos
 puntosDeTitulos dt = puntosNacionales dt + puntosInternacionales dt
 
 puntosNacionales :: DT -> Puntos
-puntosNacionales = (*10).length.(titulosSegunTipo "Nacional")
+puntosNacionales = torneosPorPuntaje 10 "Nacional"
 
 puntosInternacionales :: DT -> Puntos
-puntosInternacionales = (*20).length.(titulosSegunTipo "Internacional")
+puntosInternacionales = torneosPorPuntaje 20 "Internacional"
+
+torneosPorPuntaje :: Int -> String -> DT -> Puntos
+torneosPorPuntaje puntaje tipoTorneo = (*puntaje).length.(titulosSegunTipo tipoTorneo)
 
 titulosSegunTipo :: String -> DT -> [Titulo]
 titulosSegunTipo tipo = filter (esDeTipo tipo).titulos 
